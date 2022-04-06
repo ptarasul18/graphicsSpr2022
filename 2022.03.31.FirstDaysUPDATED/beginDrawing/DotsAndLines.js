@@ -94,17 +94,38 @@ function main() {
 function initVertexBuffers(gl) {
 //==============================================================================
 // first, create an array with all our vertex attribute values:
-  var vertices = new Float32Array([
-     0.0,  0.5, 0.0, 1.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
-    -0.2,  0.0, 0.0, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
-    -0.5, -0.5, 0.0, 1.0,   
-     0.0, -0.2, 0.0, 1.0, 	// new point!
-     0.5, -0.5, 0.0, 1.0,	// 
-     0.2,  0.0, 0.0, 1.0, 	// new point!  (note we need a trailing comma here)
-     0.4, 0.4, 0.0, 1.0,
+var scale = 0.5;  
+var vertices = new Float32Array([
+    //  0.0,  0.5, 0.0, 1.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
+    // -0.2,  0.0, 0.0, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
+    // -0.5, -0.5, 0.0, 1.0,   
+    //  0.0, -0.2, 0.0, 1.0, 	// new point!
+    //  0.5, -0.5, 0.0, 1.0,	// 
+    //  0.2,  0.0, 0.0, 1.0, 	// new point!  (note we need a trailing comma here)
+    //  0.4, 0.4, 0.0, 1.0,
+
+    //offset: need to move square with same z values to different x/y offset, for example
+    //or square with same y  
+    //  0.0, 0.0, 0.0, 1.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
+    //  0.0, 0.0, 1.0*scale, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
+    //  0.0, 1.0*scale, 0.0, 1.0,   
+    //  0.0, 1.0*scale, 1.0*scale, 1.0, 	// new point!
+    //  1.0*scale, 0.0, 0.0, 1.0,	// 
+    //  1.0*scale,  0.0, 1.0*scale, 1.0, 	// new point!  (note we need a trailing comma here)
+    //  1.0*scale, 1.0*scale, 0.0, 1.0,
+    //  1.0*scale, 1.0*scale, 1.0*scale, 1.0,
+
+     0.0, 0.0, 0.0, 1.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
+     -1.0*scale*scale, -1.0*scale*scale, 1.0*scale, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
+     0.0, 1.0*scale, 0.0, 1.0,   
+     -1.0*scale*scale, 1.0*scale*scale, 1.0*scale, 1.0, 	// new point!
+     1.0*scale, 0.0, 0.0, 1.0,	// 
+     1.0*scale*scale,  -1.0*scale*scale, 1.0*scale, 1.0, 	// new point!  (note we need a trailing comma here)
+     1.0*scale, 1.0*scale, 0.0, 1.0,
+     1.0*scale*scale, 1.0*scale*scale, 1.0*scale, 1.0,
      
   ]);
-  var n = 7; // The number of vertices
+  var n = 8; // The number of vertices
 
   // Then in the Graphics hardware, create a vertex buffer object (VBO)
   var vertexBuffer = gl.createBuffer();	// get it's 'handle'
