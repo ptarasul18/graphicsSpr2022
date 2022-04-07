@@ -106,23 +106,23 @@ var vertices = new Float32Array([
 
     //offset: need to move square with same z values to different x/y offset, for example
     //or square with same y  
-    //  0.0, 0.0, 0.0, 1.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
-    //  0.0, 0.0, 1.0*scale, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
-    //  0.0, 1.0*scale, 0.0, 1.0,   
-    //  0.0, 1.0*scale, 1.0*scale, 1.0, 	// new point!
-    //  1.0*scale, 0.0, 0.0, 1.0,	// 
-    //  1.0*scale,  0.0, 1.0*scale, 1.0, 	// new point!  (note we need a trailing comma here)
-    //  1.0*scale, 1.0*scale, 0.0, 1.0,
-    //  1.0*scale, 1.0*scale, 1.0*scale, 1.0,
-
      0.0, 0.0, 0.0, 1.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
-     -1.0*scale*scale, -1.0*scale*scale, 1.0*scale, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
+     0.0, 0.0, 1.0*scale, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
      0.0, 1.0*scale, 0.0, 1.0,   
-     -1.0*scale*scale, 1.0*scale*scale, 1.0*scale, 1.0, 	// new point!
+     0.0, 1.0*scale, 1.0*scale, 1.0, 	// new point!
      1.0*scale, 0.0, 0.0, 1.0,	// 
-     1.0*scale*scale,  -1.0*scale*scale, 1.0*scale, 1.0, 	// new point!  (note we need a trailing comma here)
+     1.0*scale,  0.0, 1.0*scale, 1.0, 	// new point!  (note we need a trailing comma here)
      1.0*scale, 1.0*scale, 0.0, 1.0,
-     1.0*scale*scale, 1.0*scale*scale, 1.0*scale, 1.0,
+     1.0*scale, 1.0*scale, 1.0*scale, 1.0,
+
+    //  0.0, 0.0, 0.0, 1.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
+    //  -1.0*scale*scale, -1.0*scale*scale, 1.0*scale, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
+    //  0.0, 1.0*scale, 0.0, 1.0,   
+    //  -1.0*scale*scale, 1.0*scale*scale, 1.0*scale, 1.0, 	// new point!
+    //  1.0*scale, 0.0, 0.0, 1.0,	// 
+    //  1.0*scale*scale,  -1.0*scale*scale, 1.0*scale, 1.0, 	// new point!  (note we need a trailing comma here)
+    //  1.0*scale, 1.0*scale, 0.0, 1.0,
+    //  1.0*scale*scale, 1.0*scale*scale, 1.0*scale, 1.0,
      
   ]);
   var n = 8; // The number of vertices
