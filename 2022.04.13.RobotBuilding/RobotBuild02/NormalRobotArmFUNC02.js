@@ -365,24 +365,23 @@ function drawAll() {
 
 //========================================
 // START with an empty model matrix; drawing axes == CVV
-	g_modelMatrix.setIdentity();
+	g_modelMatrix.setIdentity();  // 'set' means DISCARD old matrix,
 	// DEBUGGING: if your push/pop operations are all balanced and correct,
 	// you can comment out this 'setIdentity()' call with no on-screen change...
 
 	// Move drawing axes to the 'base' or 'shoulder' of the robot arm:
-	g_modelMatrix.translate(-0.6,-0.6, 0.0);  // 'set' means DISCARD old matrix,
+	g_modelMatrix.translate(-0.6,-0.6, 0.0); 
 		  						// (drawing axes centered in CVV), and then make new
 		  						// drawing axes moved to the lower-left corner of CVV.  
 	drawRobot();
-
 }
 
 
 function drawRobot() {
 //==============================================================================
 	//----------------------------------------------------------
-	pushMatrix(g_modelMatrix);
-	//-----------------------------------------------------------			
+	pushMatrix(g_modelMatrix);		// SAVE current drawing axes.
+	//----------------------------------------------------------		
 			//-------Draw Lower Arm---------------
 		  g_modelMatrix.rotate(g_angle0now, 0, 0, 1);  // Make new drawing axes that
 		  						// that spin around z axis (0,0,1) of the previous 
@@ -459,9 +458,9 @@ function drawRobot() {
 				  
 				  // RETURN to the saved drawing axes at the 'wrist':
 					// RETRIEVE PREVIOUSLY-SAVED DRAWING AXES HERE:
-					//---------------------
+					//-----------------------
 			g_modelMatrix = popMatrix();
-			//----------------------	
+			//---------------------------	
 			//=========Draw upper jaw of robot pincer============================
 			// (almost identical to the way I drew the upper jaw)
 			g_modelMatrix.rotate(-g_angle2now, 0,0,1);		
@@ -484,6 +483,9 @@ function drawRobot() {
 			// Draw outer upper jaw segment:		(same as for lower jaw)		
 		  // DRAW BOX: Use this matrix to transform & draw our VBO's contents:
 		  drawBox();
+	//----------------------------------------------------------
+	g_modelMatrix = popMatrix();	// RETURN to our initial drawing axes.
+	//----------------------------------------------------------	
 }
 
 function drawArm() {

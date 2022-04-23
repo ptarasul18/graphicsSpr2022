@@ -409,7 +409,6 @@ function drawAll() {
 		  gl.drawArrays(gl.TRIANGLES, 0, g_vertCount);	// draw all vertices.
 
 		  
-		  
 	//---------------------
 	g_modelMatrix = popMatrix();
 	//----------------------

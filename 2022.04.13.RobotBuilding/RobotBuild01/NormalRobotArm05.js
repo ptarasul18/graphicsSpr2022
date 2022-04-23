@@ -407,9 +407,6 @@ function drawAll() {
 		  // DRAW BOX: Use this matrix to transform & draw our VBO's contents:
 		  gl.uniformMatrix4fv(uLoc_modelMatrix, false, g_modelMatrix.elements);
 		  gl.drawArrays(gl.TRIANGLES, 0, g_vertCount);	// draw all vertices.
-		  // DRAW BOX: Use this matrix to transform & draw our VBO's contents:
-		  gl.uniformMatrix4fv(uLoc_modelMatrix, false, g_modelMatrix.elements);
-		  gl.drawArrays(gl.TRIANGLES, 0, g_vertCount);	// draw all vertices.
 		  
 		  
 			// DRAW PINCERS:====================================================

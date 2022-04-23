@@ -369,26 +369,32 @@ function drawAll() {
 	// DEBUGGING: if your push/pop operations are all balanced and correct,
 	// you can comment out this 'setIdentity()' call with no on-screen change...
 
+	// Move drawing axes to the 'base' or 'shoulder' of the robot arm:
+	g_modelMatrix.translate(-0.6,-0.6, 0.0);  // 'set' means DISCARD old matrix,
+		  						// (drawing axes centered in CVV), and then make new
+		  						// drawing axes moved to the lower-left corner of CVV.  
+	drawRobot();
+
+}
+
+
+function drawRobot() {
+//==============================================================================
 	//----------------------------------------------------------
-	pushMatrix(g_modelMatrix);
-	//-----------------------------------------------------------
-			// Move drawing axes to the 'base' or 'shoulder' of the robot arm:
-			g_modelMatrix.translate(-0.6,-0.6, 0.0);  // 'set' means DISCARD old matrix,
-				  						// (drawing axes centered in CVV), and then make new
-				  						// drawing axes moved to the lower-left corner of CVV.  
-			
+	pushMatrix(g_modelMatrix);		// SAVE current drawing axes.
+	//----------------------------------------------------------		
 			//-------Draw Lower Arm---------------
-			g_modelMatrix.rotate(g_angle0now, 0, 0, 1);  // Make new drawing axes that
+		  g_modelMatrix.rotate(g_angle0now, 0, 0, 1);  // Make new drawing axes that
 		  						// that spin around z axis (0,0,1) of the previous 
 		  						// drawing axes, using the same origin.
+		
+		  //g_modelMatrix.rotate(3*g_angle0now, 0,1,0);  //  try: SPIN ON Y AXIS!!!
 			g_modelMatrix.translate(-0.1, 0,0);						// Move box so that we pivot
 									// around the MIDDLE of it's lower edge, and not the left corner.
+		
 		  // DRAW BOX:  Use this matrix to transform & draw our VBO's contents:
-		  		// Pass our current matrix to the vertex shaders:
-		  gl.uniformMatrix4fv(uLoc_modelMatrix, false, g_modelMatrix.elements);
-		  		// Draw the rectangle held in the VBO we created in initVertexBuffers().
-		  gl.drawArrays(gl.TRIANGLES, 0, g_vertCount);	// draw all vertices.
-		  
+		  drawBox();
+		
 		  //-------Draw Upper Arm----------------
 		  g_modelMatrix.translate(0.1, 0.5, 0); 			// Make new drawing axes that
 		  						// we moved upwards (+y) measured in prev. drawing axes, and
@@ -404,11 +410,11 @@ function drawAll() {
 		  						// the vertices of our model stored in our VBO; instead
 		  						// we changed the DRAWING AXES used to draw it. Thus
 		  						// we translate by the 0.1, not 0.1*0.6.)
+		
 		  // DRAW BOX: Use this matrix to transform & draw our VBO's contents:
-		  gl.uniformMatrix4fv(uLoc_modelMatrix, false, g_modelMatrix.elements);
-		  gl.drawArrays(gl.TRIANGLES, 0, g_vertCount);	// draw all vertices.		  
+		  drawBox();
 		  
-			// DRAW PINCERS:====================================================
+		  // DRAW PINCERS:====================================================
 			g_modelMatrix.translate(0.1, 0.5, 0.0);	// Make new drawing axes at 
 								  // the robot's "wrist" -- at the center top of upper arm
 			
@@ -442,28 +448,65 @@ function drawAll() {
 				
 					// Draw inner lower jaw segment:				
 				  // DRAW BOX: Use this matrix to transform & draw our VBO's contents:
-				  gl.uniformMatrix4fv(uLoc_modelMatrix, false, g_modelMatrix.elements);
-				  gl.drawArrays(gl.TRIANGLES, 0, g_vertCount);	// draw all vertices.
+				  drawBox();
 					// Now move drawing axes to the centered end of that lower-jaw segment:
 					g_modelMatrix.translate(0.1, 0.5, 0.0);
 					g_modelMatrix.rotate(40.0, 0,0,1);		// make bend in the lower jaw
 					g_modelMatrix.translate(-0.1, 0.0, 0.0);	// re-center the outer segment,
 					// Draw outer lower jaw segment:				
 				  // DRAW BOX: Use this matrix to transform & draw our VBO's contents:
-				  gl.uniformMatrix4fv(uLoc_modelMatrix, false, g_modelMatrix.elements);
-				  gl.drawArrays(gl.TRIANGLES, 0, g_vertCount);	// draw all vertices.
-
+				  drawBox();
+				  
 				  // RETURN to the saved drawing axes at the 'wrist':
 					// RETRIEVE PREVIOUSLY-SAVED DRAWING AXES HERE:
-			//---------------------
+					//-----------------------
 			g_modelMatrix = popMatrix();
-			//----------------------	
-	  
-		  
-	//---------------------
-	g_modelMatrix = popMatrix();  // DONE with robot-drawing; return
-	//----------------------
+			//---------------------------	
+			//=========Draw upper jaw of robot pincer============================
+			// (almost identical to the way I drew the upper jaw)
+			g_modelMatrix.rotate(-g_angle2now, 0,0,1);		
+								// make new drawing axes that rotate upper jaw symmetrically
+								// with lower jaw: changed sign of 15.0 and of 0.5
+			g_modelMatrix.scale(0.4, 0.4, 0.4);		// Make new drawing axes that
+								// have size of just 40% of previous drawing axes,
+			g_modelMatrix.translate(-0.2, 0, 0);  // move box LEFT corner at wrist-point.
+			
+			// Draw inner upper jaw segment:				(same as for lower jaw)
+		  // DRAW BOX: Use this matrix to transform & draw our VBO's contents:
+		  drawBox();
+		
+			// Now move drawing axes to the centered end of that upper-jaw segment:
+			g_modelMatrix.translate(0.1, 0.5, 0.0);
+			g_modelMatrix.rotate(-40.0, 0,0,1);		// make bend in the upper jaw that
+																					// is opposite of lower jaw (+/-40.0)
+			g_modelMatrix.translate(-0.1, 0.0, 0.0);	// re-center the outer segment,
+			 
+			// Draw outer upper jaw segment:		(same as for lower jaw)		
+		  // DRAW BOX: Use this matrix to transform & draw our VBO's contents:
+		  drawBox();
+
 }
+
+function drawArm() {
+//==============================================================================
+// Draw rotating flexing arm of robot pivoting at origin of current drawing axes, 
+// (be sure to return to current drawing axes on exit)
+}
+
+function drawPincers() {
+//==============================================================================
+// Draw grasping hand-pincers robot pivoting at origin of current drawing axes, 
+// (be sure to return to current drawing axes on exit)
+}
+
+function drawBox() {
+//==============================================================================
+// Draw our 2 red triangles using current g_modelMatrix:
+		  gl.uniformMatrix4fv(uLoc_modelMatrix, false, g_modelMatrix.elements);
+		  gl.drawArrays(gl.TRIANGLES, 0, g_vertCount);	// draw all vertices.
+}
+ 
+
 
 function testMatrixStack() {
 //==============================================================================

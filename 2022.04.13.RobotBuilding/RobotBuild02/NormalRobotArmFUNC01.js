@@ -494,7 +494,7 @@ function drawArm() {
 // (be sure to return to current drawing axes on exit)
 }
 
-function draw Pincers() {
+function drawPincers() {
 //==============================================================================
 // Draw grasping hand-pincers robot pivoting at origin of current drawing axes, 
 // (be sure to return to current drawing axes on exit)
