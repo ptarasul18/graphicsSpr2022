@@ -117,8 +117,8 @@ function initVertexBuffer(gl) {
 //   makeToruss();						// create, fill the torVerts array
 //   makeGroundGrid();				// create, fill the gndVerts array
   // how many floats total needed to store all shapes?
-//   makeAxle();
-	var mySiz = (cylVerts.length );	
+  makeAxle();
+	var mySiz = (cylVerts.length + axVerts.length);	
     //+ sphVerts.length + 
     //torVerts.length + gndVerts.length					
 
@@ -132,10 +132,10 @@ function initVertexBuffer(gl) {
   for(i=0,j=0; j< cylVerts.length; i++,j++) {
   	colorShapes[i] = cylVerts[j];
 		}
-	// 	sphStart = i;						// next, we'll store the sphere;
-	// for(j=0; j< sphVerts.length; i++, j++) {// don't initialize i -- reuse it!
-	// 	colorShapes[i] = sphVerts[j];
-	// 	}
+	axStart = i;						// next, we'll store the sphere;
+	for(j=0; j< axVerts.length; i++, j++) {// don't initialize i -- reuse it!
+		colorShapes[i] = axVerts[j];
+		}
 	// 	torStart = i;						// next, we'll store the torus;
 	// for(j=0; j< torVerts.length; i++, j++) {
 	// 	colorShapes[i] = torVerts[j];
@@ -324,11 +324,15 @@ function makeCylinder() {
 }
 
 function makeAxle() {
-    var ctrColr = new Float32Array([0.2, 0.2, 0.2]);	// dark gray
- var topColr = new Float32Array([0.4, 0.7, 0.4]);	// light green
+//  var ctrColr = new Float32Array([0.2, 0.2, 0.2]);	// dark gray
+ var ctrColr = new Float32Array([0.0, 0.0, 0.0]);	// dark gray
+//  var topColr = new Float32Array([0.4, 0.7, 0.4]);	// light green
+ var topColr = new Float32Array([1.0, 0.0, 0.0]);	// dark gray
  var botColr = new Float32Array([0.5, 0.5, 1.0]);	// light blue
  var capVerts = 16;	// # of vertices around the topmost 'cap' of the shape
- var botRadius = 1.0;		// radius of bottom of cylinder (top always 1.0)
+ var botRadius = 0.3;		// radius of bottom of cylinder (top always 1.0)
+ var topRadius = 0.3;
+ var zLen = 2;
  
  // Create a (global) array to hold this cylinder's vertices;
  axVerts = new Float32Array(  ((capVerts*6) -2) * floatsPerVertex);
@@ -342,7 +346,7 @@ function makeAxle() {
 		{				// put even# vertices at center of cylinder's top cap:
 			axVerts[j  ] = 0.0; 			// x,y,z,w == 0,0,1,1
 			axVerts[j+1] = 0.0;	
-			axVerts[j+2] = 1.0 * 0.2; 
+			axVerts[j+2] = 1.0 * zLen; 
 			axVerts[j+3] = 1.0;			// r,g,b = topColr[]
 			axVerts[j+4]=ctrColr[0]; 
 			axVerts[j+5]=ctrColr[1]; 
@@ -351,11 +355,11 @@ function makeAxle() {
 		else { 	// put odd# vertices around the top cap's outer edge;
 						// x,y,z,w == cos(theta),sin(theta), 1.0, 1.0
 						// 					theta = 2*PI*((v-1)/2)/capVerts = PI*(v-1)/capVerts
-			axVerts[j  ] = Math.cos(Math.PI*(v-1)/capVerts);			// x
-			axVerts[j+1] = Math.sin(Math.PI*(v-1)/capVerts);			// y
+			axVerts[j  ] = topRadius * Math.cos(Math.PI*(v-1)/capVerts);			// x
+			axVerts[j+1] = topRadius * Math.sin(Math.PI*(v-1)/capVerts);			// y
 			//	(Why not 2*PI? because 0 < =v < 2*capVerts, so we
 			//	 can simplify cos(2*PI * (v-1)/(2*capVerts))
-			axVerts[j+2] = 1.0 * 0.2;	// z
+			axVerts[j+2] = 1.0 * zLen;	// z
 			axVerts[j+3] = 1.0;	// w.
 			// r,g,b = topColr[]
 			axVerts[j+4]=topColr[0]; 
@@ -368,20 +372,20 @@ function makeAxle() {
 	for(v=0; v< 2*capVerts; v++, j+=floatsPerVertex) {
 		if(v%2==0)	// position all even# vertices along top cap:
 		{		
-				axVerts[j  ] = Math.cos(Math.PI*(v)/capVerts);		// x
-				axVerts[j+1] = Math.sin(Math.PI*(v)/capVerts);		// y
-				axVerts[j+2] = 1.0 * 0.2;	// z
-				cylVerts[j+3] = 1.0;	// w.
+				axVerts[j  ] = topRadius * Math.cos(Math.PI*(v)/capVerts);		// x
+				axVerts[j+1] = topRadius * Math.sin(Math.PI*(v)/capVerts);		// y
+				axVerts[j+2] = 1.0 * zLen;	// z
+				axVerts[j+3] = 1.0;	// w.
 				// r,g,b = topColr[]
 				axVerts[j+4]=topColr[0]; 
 				axVerts[j+5]=topColr[1]; 
-				cylVerts[j+6]=topColr[2];			
+				axVerts[j+6]=topColr[2];			
 		}
 		else		// position all odd# vertices along the bottom cap:
 		{
 				axVerts[j  ] = botRadius * Math.cos(Math.PI*(v-1)/capVerts);		// x
 				axVerts[j+1] = botRadius * Math.sin(Math.PI*(v-1)/capVerts);		// y
-				axVerts[j+2] =-1.0 * 0.2;	// z
+				axVerts[j+2] =-1.0 * zLen;	// z
 				axVerts[j+3] = 1.0;	// w.
 				// r,g,b = topColr[]
 				axVerts[j+4]=botColr[0]; 
@@ -395,7 +399,7 @@ function makeAxle() {
 		if(v%2==0) {	// position even #'d vertices around bot cap's outer edge
 			axVerts[j  ] = botRadius * Math.cos(Math.PI*(v)/capVerts);		// x
 			axVerts[j+1] = botRadius * Math.sin(Math.PI*(v)/capVerts);		// y
-			axVerts[j+2] =-1.0 * 0.2;	// z
+			axVerts[j+2] =-1.0 * zLen;	// z
 			axVerts[j+3] = 1.0;	// w.
 			// r,g,b = topColr[]
 			axVerts[j+4]=botColr[0]; 
@@ -405,17 +409,17 @@ function makeAxle() {
 		else {				// position odd#'d vertices at center of the bottom cap:
 			axVerts[j  ] = 0.0; 			// x,y,z,w == 0,0,-1,1
 			axVerts[j+1] = 0.0;	
-			axVerts[j+2] =-1.0 * 0.2; 
+			axVerts[j+2] =-1.0 * zLen; 
 			axVerts[j+3] = 1.0;			// r,g,b = botColr[]
-			axVerts[j+4]=botColr[0]; 
-			axVerts[j+5]=botColr[1]; 
-			axVerts[j+6]=botColr[2];
+			axVerts[j+4]=ctrColr[0]; 
+			axVerts[j+5]=ctrColr[1]; 
+			axVerts[j+6]=ctrColr[2];
 		}
 	}
 }
 
-function makeAxWheel() {
-    console.log("hello");
+function makeSeat(){
+
 }
 
 function makeSphere() {
@@ -682,7 +686,8 @@ function draw(gl, n, currentAngle, modelMatrix, u_ModelMatrix) {
   																				// to match WebGL display canvas.
   modelMatrix.scale(0.2, 0.2, 0.2);
   						// if you DON'T scale, cyl goes outside the CVV; clipped!
-  modelMatrix.rotate(currentAngle, 0, 1, 0);  // spin around y axis.
+  modelMatrix.rotate(90.0, 1, 0, 0);
+  modelMatrix.rotate(currentAngle, 0, 0, 1);  // spin around y axis.
 	// Drawing:
   // Pass our current matrix to the vertex shaders:
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
@@ -691,7 +696,22 @@ function draw(gl, n, currentAngle, modelMatrix, u_ModelMatrix) {
   							cylStart/floatsPerVertex, // start at this vertex number, and
   							cylVerts.length/floatsPerVertex);	// draw this many vertices.
   
-  
+  //draw spinning axle
+  modelMatrix.setTranslate(0.4,0.4, 0.0);  // 'set' means DISCARD old matrix,
+  						// (drawing axes centered in CVV), and then make new
+  						// drawing axes moved to the lower-left corner of CVV. 
+  modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
+  																				// to match WebGL display canvas.
+  modelMatrix.scale(0.2, 0.2, 0.2);
+  						// if you DON'T scale, cyl goes outside the CVV; clipped!
+  modelMatrix.rotate(currentAngle, 0, 1, 0);  // spin around y axis.
+	// Drawing:
+  // Pass our current matrix to the vertex shaders:
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+  // Draw the cylinder's vertices, and no other vertices:
+  gl.drawArrays(gl.TRIANGLE_STRIP,				// use this drawing primitive, and
+  							axStart/floatsPerVertex, // start at this vertex number, and
+  							axVerts.length/floatsPerVertex);	// draw this many vertices.
   //--------Draw Spinning Sphere
 //   modelMatrix.setTranslate( 0.4, 0.4, 0.0); // 'set' means DISCARD old matrix,
 //   						// (drawing axes centered in CVV), and then make new
