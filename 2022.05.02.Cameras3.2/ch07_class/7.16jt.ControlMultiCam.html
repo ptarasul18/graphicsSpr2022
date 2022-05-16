@@ -2,11 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Spinning Unicycle</title>
+    <title>ControlMultiCAM</title>
   </head>
-	<!--	Create the HTML5 'canvas' element in which we will run WebGL  -->
+	<!--	Create the HTML5 'canvas' element in which we will run WebGL
+	-->
   <body onload="main()">
-    <canvas id="webgl" width="300" height="300">
+    <canvas id="webgl" width="500" height="500">
     Please use a browser that supports "canvas"
     </canvas>
 	<p>
@@ -31,12 +32,6 @@
 
 <hr> <!-- Draw a horizontal-line separator------------->
 	Try keyboard & mouse click/drag inside the canvas, and:
-		<br>
-		Left arrow key: increase unicycle speed left 
-		<br>
-		Right arrow key: increase unicycle speed right
-		<br>
-		Mouse drag: Rotate winged prism
 		<br>
 		<span id='KeyDownResult'  > KeyDown:    </span> <!-- myKeyDown() modifies this span object -->		
 		<br>
@@ -66,12 +61,12 @@
 			(Matsuda et al., 2013 WebGL Programming Guide) that help us
 			with WebGL programming:
 	-->
-    <script src="lib/webgl-utils.js"></script>
-    <script src="lib/webgl-debug.js"></script>
-    <script src="lib/cuon-utils.js"></script>
-    <script src="lib/cuon-matrix-quat03.js"></script>
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/webgl-debug.js"></script>
+    <script src="../lib/cuon-utils.js"></script>
+    <script src="../lib/cuon-matrix-quat03.js"></script>
 	<!--	Finally, load in our own JavaScript program file.
 	-->
-    <script src="unicycle.js"></script>
+    <script src="ControlMultiCam.js"></script>
   </body>
 </html>
