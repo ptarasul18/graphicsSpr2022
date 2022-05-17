@@ -563,12 +563,12 @@ function dragQuat(xdrag, ydrag) {
 //	qTmp.normalize();						// normalize to ensure we stay at length==1.0.
 	qTot.copy(qTmp);
 	// show the new quaternion qTot on our webpage in the <div> element 'QuatValue'
-	document.getElementById('QuatValue').innerHTML= 
-														 '\t X=' +qTot.x.toFixed(res)+
-														'i\t Y=' +qTot.y.toFixed(res)+
-														'j\t Z=' +qTot.z.toFixed(res)+
-														'k\t W=' +qTot.w.toFixed(res)+
-														'<br>length='+qTot.length().toFixed(res);
+	// document.getElementById('QuatValue').innerHTML= 
+	// 													 '\t X=' +qTot.x.toFixed(res)+
+	// 													'i\t Y=' +qTot.y.toFixed(res)+
+	// 													'j\t Z=' +qTot.z.toFixed(res)+
+	// 													'k\t W=' +qTot.w.toFixed(res)+
+	// 													'<br>length='+qTot.length().toFixed(res);
 };
 
 function testQuaternions() {

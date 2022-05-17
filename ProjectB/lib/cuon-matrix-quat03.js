@@ -781,7 +781,8 @@ var Vector3 = function(opt_src) {
   * @return this
   */
 Vector3.prototype.normalize = function() {
-  var v = this.elements;
+  // var v = this.elements;
+  var v = this;
   // find the length of the vector:
   var c = v[0], d = v[1], e = v[2], g = Math.sqrt(c*c+d*d+e*e);
   if(g){              // if given vector had non-zero length,
@@ -823,11 +824,11 @@ Vector3.prototype.dot = function(opt_src) {
   *     cVec = bVec.cross(aVec);   // finds bVec x aVec (== -aVec x bVec)
   */
 Vector3.prototype.cross = function(opt_src) {
-  var vA = this.elements;   // short-hand for the calling object
+  var vA = this;   // short-hand for the calling object
   var ans = new Vector3([0.0, 0.0, 0.0]);  // initialize to zero vector 
-  var vC = ans.elements;    // get the Float32Array contents of 'ans'
+  var vC = ans;    // get the Float32Array contents of 'ans'
   if(opt_src && typeof opt_src === 'object' && opt_src.hasOwnProperty('elements')) {
-    var vB = opt_src.elements;  // short-hand for the Vector3 argument
+    var vB = opt_src;  // short-hand for the Vector3 argument
     }
   else {
     console.log('ERROR! cross() function needs Vec3 argument! \n');
@@ -848,21 +849,36 @@ Vector3.prototype.cross = function(opt_src) {
   *     aVec3.printMe('my aVec3');
   *                        // prints-- my aVec3: 7.00  8.00  9.00
   */
- Vector3.prototype.printMe = function(opt_src) {
- var res = 5;
-  if (opt_src && typeof opt_src === 'string') {
-     console.log(opt_src,':',
-      this.elements[ 0].toFixed(res),'\t', 
-      this.elements[ 1].toFixed(res),'\t', 
-      this.elements[ 2].toFixed(res),'\n');
-  } 
-  else {
-     console.log('Vector3:', 
-      this.elements[ 0].toFixed(res),'\t',
-      this.elements[ 1].toFixed(res),'\t', 
-      this.elements[ 2].toFixed(res),'\n');
-  }
-};
+//  Vector3.prototype.printMe = function(opt_src) {
+//  var res = 5;
+//   if (opt_src && typeof opt_src === 'string') {
+//      console.log(opt_src,':',
+//       this.elements[ 0].toFixed(res),'\t', 
+//       this.elements[ 1].toFixed(res),'\t', 
+//       this.elements[ 2].toFixed(res),'\n');
+//   } 
+//   else {
+//      console.log('Vector3:', 
+//       this.elements[ 0].toFixed(res),'\t',
+//       this.elements[ 1].toFixed(res),'\t', 
+//       this.elements[ 2].toFixed(res),'\n');
+//   }
+// };
+Vector3.prototype.printMe = function(opt_src) {
+  var res = 5;
+   if (opt_src && typeof opt_src === 'string') {
+      console.log(opt_src,':',
+       this[0].toFixed(res),'\t', 
+       this[1].toFixed(res),'\t', 
+       this[2].toFixed(res),'\n');
+   } 
+   else {
+      console.log('Vector3:', 
+       this[0].toFixed(res),'\t',
+       this[1].toFixed(res),'\t', 
+       this[2].toFixed(res),'\n');
+   }
+ };
 
 /**
  * Constructor of Vector4
