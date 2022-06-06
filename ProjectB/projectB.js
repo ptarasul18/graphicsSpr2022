@@ -1030,6 +1030,7 @@ function drawScene(){
     gl.drawArrays(gl.LINES,				// use this drawing primitive, and
   							aStart/floatsPerVertex, // start at this vertex number, and
   							aVerts.length/floatsPerVertex);	// draw this many vertices.
+	console.log(aStart);
 	pushMatrix(g_modelMatrix);
     // g_modelMatrix.setIdentity();  // 'set' means DISCARD old matrix,
 	// DEBUGGING: if your push/pop operations are all balanced and correct,
