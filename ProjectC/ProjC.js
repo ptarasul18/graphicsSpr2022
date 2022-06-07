@@ -232,7 +232,7 @@ g_canvasID.height);
                                 // self-calling animation function. 
     requestAnimationFrame(tick, g_canvasID); // browser callback request; wait
                                 // til browser is ready to re-draw canvas, then
-    // canv();
+    canv();
     timerAll();  // Update all time-varying params, and
     setCamera();
     drawAll();                // Draw all the VBObox contents
@@ -244,6 +244,7 @@ g_canvasID.height);
 function canv(){
 	g_canvasID.width = window.innerWidth * 0.98;
 	g_canvasID.height = 0.66 * window.innerHeight;
+  setCamera();
 }
 
 function timerAll() {
@@ -469,8 +470,9 @@ function setCamera() {
 // ALL VBObox objects.  REPLACE This with your own camera-control code.
 
 	g_worldMat.setIdentity();
+  aspect = g_canvasID.width / g_canvasID.height;
 	g_worldMat.perspective(42.0,   // FOVY: top-to-bottom vertical image angle, in degrees
-                      g_canvasID.width / g_canvasID.height,   // Image Aspect Ratio: camera lens width/height
+                      aspect,   // Image Aspect Ratio: camera lens width/height
                       1.0,   // camera z-near distance (always positive; frustum begins at z = -znear)
                       200.0);  // camera z-far distance (always positive; frustum ends at z = -zfar)
                       // g_canvasID.width / g_canvasID.height

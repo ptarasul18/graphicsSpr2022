@@ -519,16 +519,45 @@ function VBObox1() {
 	this.VERT_SRC =	//--------------------- VERTEX SHADER source code 
   'precision highp float;\n' +				// req'd in OpenGL ES if we use 'float'
   //
+  'attribute vec4 a_Normal;\n' +
   'uniform mat4 u_ModelMatrix;\n' +
+  'uniform mat4 u_MvpMatrix;\n' +
+  'uniform mat4 u_NormalMatrix;\n' +   // Transformation matrix of the normal
+  'uniform vec3 u_LightColor;\n' +     // Light color
+  'uniform vec3 u_LightPosition;\n' +  // Position of the light source
+  'uniform vec3 u_AmbientLight;\n' +   // Ambient light color
   'attribute vec4 a_Pos1;\n' +
   'attribute vec3 a_Colr1;\n'+
   // 'attribute float a_PtSiz1; \n' +
-  'varying vec3 v_Colr1;\n' +
+  'varying vec4 v_Colr1;\n' +
   //
   'void main() {\n' +
   // '  gl_PointSize = a_PtSiz1;\n' +
-  '  gl_Position = u_ModelMatrix * a_Pos1;\n' +
-  '	 v_Colr1 = a_Colr1;\n' + 
+  '  vec4 color = vec4(a_Colr1, 1.0);\n' +
+  '  color = vec4(0.0, 0.0, 1.0, 1.0);\n' +
+  // '  vec4 color = vec4(0.0, 0.0, 1.0, 1.0);\n' +
+  '  gl_Position = u_MvpMatrix * a_Pos1;\n' +
+  '  vec3 normal = normalize(vec3(u_NormalMatrix * a_Normal));\n' +
+  // '  vec3 normal = normalize(vec3(a_Normal));\n' +
+  '  vec4 vertexPosition = u_ModelMatrix * a_Pos1;\n' +
+  // Calculate the light direction and make it 1.0 in length
+  '  vec3 lightDirection = normalize(u_LightPosition - vec3(vertexPosition));\n' +
+  // '  vec3 lightDirection = vec3(0.0, 0.0, 1.0);\n' +
+     // The dot product of the light direction and the normal
+  '  float nDotL = max(dot(lightDirection, normal), 0.0);\n' +
+  // '  float nDotL = max(dot(normal, lightDirection), 0.0);\n' +
+     // Calculate the color due to diffuse reflection
+  '  vec3 diffuse = u_LightColor * color.rgb * nDotL;\n' +
+     // Calculate the color due to ambient reflection
+  '  vec3 ambient = u_AmbientLight * color.rgb;\n' +
+  // Add the surface colors due to diffuse reflection and ambient reflection
+  //  
+  '  v_Colr1 = vec4(diffuse + ambient, color.a);\n' + 
+  // '  v_Colr1 = vec4(diffuse, color.a);\n' +
+  // '  vec3 lightVec = vec3(0.0, 0.0, 1.0);\n' +
+  // '  v_Colr1 = vec4(clamp(a_Colr1*dot(normal,lightVec), vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0)), 1.0);\n' +
+  // '  v_Colr1 = vec4()'
+  // '	 v_Colr1 = a_Colr1;\n' + 
   ' }\n';
 /*
  // SQUARE dots:
@@ -563,9 +592,10 @@ function VBObox1() {
   // '}\n';
   this.FRAG_SRC = //---------------------- FRAGMENT SHADER source code 
   'precision mediump float;\n' +
-  'varying vec3 v_Colr1;\n' +
+  'varying vec4 v_Colr1;\n' +
   'void main() {\n' +
-  '  gl_FragColor = vec4(v_Colr1, 1.0);\n' + 
+  // '  gl_FragColor = vec4(v_Colr1, 1.0);\n' + 
+  '  gl_FragColor = v_Colr1;\n' + 
   '}\n';
 
 	makeSphere();
@@ -604,7 +634,7 @@ function VBObox1() {
 	                              // From any attrib in a given vertex in the VBO, 
 	                              // move forward by 'vboStride' bytes to arrive 
 	                              // at the same attrib for the next vertex.
-	                               
+	// console.log(this.vboStride);                               
 	            //----------------------Attribute sizes
   this.vboFcount_a_Pos1 =  4;    // # of floats in the VBO needed to store the
                                 // attribute named a_Pos1. (4: x,y,z,w values)
@@ -615,7 +645,7 @@ function VBObox1() {
                   this.FSIZE == this.vboStride, // for agreeement with'stride'
                   this.vboStride);
                   // "Uh oh! VBObox1.vboStride disagrees with attribute-size values!"
-                  
+  // console.log(this.vboStride);               
               //----------------------Attribute offsets
   //  + this.vboFcount_a_PtSiz1
 	this.vboOffset_a_Pos1 = 0;    //# of bytes from START of vbo to the START
@@ -643,6 +673,18 @@ function VBObox1() {
 	            //---------------------- Uniform locations &values in our shaders
 	this.ModelMatrix = new Matrix4();	// Transforms CVV axes to model axes.
 	this.u_ModelMatrixLoc;						// GPU location for u_ModelMat uniform
+
+  this.normalMatrix = new Matrix4();
+  this.u_NormalMatrixLoc;
+
+  this.MvpMatrix = new Matrix4();
+  this.u_MvpMatrixLoc;
+
+  this.u_AmbientLight
+  this.u_LightColor;
+  this.u_LightPosition;
+
+  
 };
 
 
@@ -720,6 +762,11 @@ VBObox1.prototype.init = function() {
     						'.init() failed to get the GPU location of attribute a_Colr1');
     return -1;	// error exit.
   }
+  this.a_Normal = gl.getAttribLocation(this.shaderLoc, 'a_Normal');
+  if (this.a_Normal < 0) {
+      console.log('Failed to get the storage location of a_Normal');
+      return -1;
+  }
   // this.a_PtSiz1Loc = gl.getAttribLocation(this.shaderLoc, 'a_PtSiz1');
   // if(this.a_PtSiz1Loc < 0) {
   //   console.log(this.constructor.name + 
@@ -734,6 +781,24 @@ VBObox1.prototype.init = function() {
     						'.init() failed to get GPU location for u_ModelMatrix uniform');
     return;
   }
+  this.u_MvpMatrixLoc = gl.getUniformLocation(this.shaderLoc, 'u_MvpMatrix');
+  if (!this.u_MvpMatrixLoc) { 
+    console.log(this.constructor.name + 
+    						'.init() failed to get GPU location for u_ModelMatrix uniform');
+    return;
+  }
+  this.u_NormalMatrixLoc = gl.getUniformLocation(this.shaderLoc, 'u_NormalMatrix');
+  this.u_LightColor = gl.getUniformLocation(this.shaderLoc, 'u_LightColor');
+  this.u_LightPosition = gl.getUniformLocation(this.shaderLoc, 'u_LightPosition');
+  this.u_AmbientLight = gl.getUniformLocation(this.shaderLoc, 'u_AmbientLight');
+  // || !this.u_LightColor || !this.u_LightPosition　|| !this.u_AmbientLight
+  if (!this.u_NormalMatrixLoc || !this.u_LightColor || !this.u_LightPosition　|| !this.u_AmbientLight) { 
+    console.log('Failed to get the storage location');
+    return;
+  }
+
+  
+  
 }
 
 VBObox1.prototype.switchToMe = function () {
@@ -789,6 +854,9 @@ VBObox1.prototype.switchToMe = function () {
   // gl.vertexAttribPointer(this.a_PtSiz1Loc,this.vboFcount_a_PtSiz1, 
   //                        gl.FLOAT, false, 
 	// 						           this.vboStride,	this.vboOffset_a_PtSiz1);	
+  //this.FSIZE * 3
+  gl.vertexAttribPointer(this.a_Normal, 3, gl.FLOAT, false, this.FSIZE * 7,this.FSIZE*4);
+  gl.enableVertexAttribArray(this.a_Normal);
   //-- Enable this assignment of the attribute to its' VBO source:
   gl.enableVertexAttribArray(this.a_Pos1Loc);
   gl.enableVertexAttribArray(this.a_Colr1Loc);
@@ -1274,6 +1342,7 @@ VBObox2.prototype.restore = function() {
 
 VBObox0.prototype.drawGndAx = function (){
   pushMatrix(this.ModelMat);
+  this.ModelMat.scale(2.0, 2.0, 2.0);
   gl.uniformMatrix4fv(this.u_ModelMatLoc,	// GPU location of the uniform
   										false, 				// use matrix transpose instead?
   										this.ModelMat.elements);	// send data from Javascript.
@@ -1294,16 +1363,39 @@ VBObox0.prototype.drawGndAx = function (){
 }
 
 VBObox1.prototype.drawSphere = function (){
+  gl.uniform3f(this.u_LightColor, 1.0, 1.0, 1.0);
+  // Set the light direction (in the world coordinate)
+  gl.uniform3f(this.u_LightPosition, 0.0, 0.0, 5.0);
+  // gl.uniform3f(this.u_LightPosition, eyex, eyey, eyez);
+  // Set the ambient light
+  gl.uniform3f(this.u_AmbientLight, 0.1, 0.1, 0.1);
   this.ModelMatrix.setIdentity();
 // THIS DOESN'T WORK!!  this.ModelMatrix = g_worldMat;
-  this.ModelMatrix.set(g_worldMat);
-  this.ModelMatrix.rotate(g_angleNow2, 0, 0, 1);
+  
+this.MvpMatrix.set(g_worldMat);  
+// this.ModelMatrix.set(g_worldMat);
+  
+this.ModelMatrix.translate(2.0, 0.0, 0.0);  
+this.ModelMatrix.rotate(g_angleNow2, 0, 0, 1);
+  // this.ModelMatrix.scale(0.1, 0.1, 0.1);
   gl.uniformMatrix4fv(this.u_ModelMatrixLoc,	// GPU location of the uniform
   										false, 										// use matrix transpose instead?
   										this.ModelMatrix.elements);	// send data from Javascript.
   
+  // Calculate the matrix to transform the normal based on the model matrix
+  // this.normalMatrix.setIdentity();
+  this.MvpMatrix.multiply(this.ModelMatrix);
+  // Pass the model view projection matrix to u_MvpMatrix
+  gl.uniformMatrix4fv(this.u_MvpMatrixLoc, false, this.MvpMatrix.elements);
+  
+  this.normalMatrix.setInverseOf(this.ModelMatrix);
+  this.normalMatrix.transpose();
+  // console.log(this.normalMatrix);
+  // Pass the transformation matrix for normals to u_NormalMatrix
+  gl.uniformMatrix4fv(this.u_NormalMatrixLoc, false, this.normalMatrix.elements);
+  
   // console.log(g_angleNow2);
-  gl.drawArrays(gl.TRIANGLES,		    // select the drawing primitive to draw:
+  gl.drawArrays(gl.TRIANGLE_STRIP,		    // select the drawing primitive to draw:
                     this.sStart/this.floatsPerVertex, 								// location of 1st vertex to draw;
                     this.numS/this.floatsPerVertex);		// number of vertices to draw on-screen.
 }
