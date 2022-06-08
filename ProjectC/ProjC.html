@@ -11,8 +11,47 @@
     </canvas>
     <p>
       <button type="button" onclick="VBO0toggle()">VBO-0 hide/show</button>
-      <button type="button" onclick="VBO1toggle()">VBO-1 hide/show</button>
-      <button type="button" onclick="VBO2toggle()">VBO-2 hide/show</button>
+      <button type="button" onclick="VBO1toggle()">Gouraud Shading hide/show</button>
+      <button type="button" onclick="VBO2toggle()">Phong Shading hide/show</button>
+    </p>
+    <p>
+      <div>
+        <input type="radio" id="phongLighting"
+         name="lighting" value="phongLighting" checked>
+        <label for="phongLighting">Phong Lighting</label>
+    
+        <input type="radio" id="blinnphong"
+         name="lighting" value="blinnphong">
+        <label for="blinnphong">Blinn-Phong Lighting</label>
+      </div>
+    </p>
+    <p>
+      <div>
+        <button type="button" onclick="WorldLightToggle()">World Light On/Off</button>
+        <button type="button" onclick="HeadlightToggle()">Headlight On/Off</button>
+      </div>
+      <div>
+        <label for="lightx">Light Position  x:</label>
+        <input type="number" id="lightx" name="lightx"
+          value="0.0">
+        <label for="lighty">y:</label>
+        <input type="number" id="lighty" name="lighty"
+          value="0.0">
+        <label for="lightx">z:</label>
+        <input type="number" id="lightz" name="lightz"
+          value="5.0">
+          </div>
+          <div>
+        <input type="color" id="ambient" name="ambient"
+           value="#ffffff">
+        <label for="ambient">Ambient Light Color</label>
+        <input type="color" id="diffuse" name="diffuse"
+           value="#ffffff">
+        <label for="diffuse">Diffuse Light Color</label>
+        <input type="color" id="specular" name="specular"
+           value="#ffffff">
+        <label for="specular">Specular Light Color</label>
+      </div>
     </p>
     <script src="lib/webgl-utils.js"></script>
     <script src="lib/webgl-debug.js"></script>

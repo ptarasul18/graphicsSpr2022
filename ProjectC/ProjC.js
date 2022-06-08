@@ -93,10 +93,10 @@ var g_lastMS = Date.now();			// Timestamp (in milliseconds) for our
 var g_angleNow0  =  0.0; 			  // Current rotation angle, in degrees.
 var g_angleRate0 = 45.0;				// Rotation angle rate, in degrees/second.
                                 //---------------
-var g_angleNow1  = 100.0;       // current angle, in degrees
-var g_angleRate1 =  95.0;        // rotation angle rate, degrees/sec
-var g_angleMax1  = 150.0;       // max, min allowed angle, in degrees
-var g_angleMin1  =  60.0;
+var g_angleNow1  = 0.0;       // current angle, in degrees
+var g_angleRate1 =  35.0;        // rotation angle rate, degrees/sec
+var g_angleMax1  = 90.0;       // max, min allowed angle, in degrees
+var g_angleMin1  =  -90.0;
                                 //---------------
 // var g_angleNow2  =  0.0; 			  // Current rotation angle, in degrees.
 // var g_angleRate2 = -62.0;				// Rotation angle rate, in degrees/second.
@@ -115,7 +115,7 @@ var g_posMin1 = -1.0;
 
 //sphere rotation
 var g_angleNow2  =  0.0; 			  // Current rotation angle, in degrees.
-var g_angleRate2 = 70.0;				// Rotation angle rate, in degrees/second.
+var g_angleRate2 = 45.0;				// Rotation angle rate, in degrees/second.
 
 //camera motion
 var eyex = 5.0;
@@ -133,10 +133,26 @@ var aimy = eyey + Math.sin(theta) * dist1;
 // var aimz = eyez + tilt - 1.0;
 var aimz = eyez + tilt;
 
+var bpLt = document.getElementById('blinnphong').checked;
+
+//light selection
+var lightOn = true;
+var worldX = document.getElementById('lightx').value;
+var worldY = document.getElementById('lighty').value;
+var worldZ = document.getElementById('lightz').value;
+
+//color selection
+var aColor = hexToRgb(document.getElementById('ambient').value);
+var dColor = hexToRgb(document.getElementById('diffuse').value);
+var sColor = hexToRgb(document.getElementById('specular').value);
+
+//headlight
+var hOn = true;
+
 // For mouse/keyboard:------------------------
 var g_show0 = 1;								// 0==Show, 1==Hide VBO0 contents on-screen.
 var g_show1 = 1;								// 	"					"			VBO1		"				"				" 
-var g_show2 = 1;                //  "         "     VBO2    "       "       "
+var g_show2 = 0;                //  "         "     VBO2    "       "       "
 
 // GLOBAL CAMERA CONTROL:					// 
 g_worldMat = new Matrix4();				// Changes CVV drawing axes to 'world' axes.
@@ -246,6 +262,15 @@ function canv(){
 	g_canvasID.height = 0.66 * window.innerHeight;
   setCamera();
 }
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: (parseInt(result[1], 16))/255.0,
+    g: (parseInt(result[2], 16))/255.0,
+    b: (parseInt(result[3], 16))/255.0
+  } : null;
+}
+
 
 function timerAll() {
 //=============================================================================
@@ -264,6 +289,7 @@ function timerAll() {
     }
   // Find new time-dependent parameters using the current or elapsed time:
   // Continuous rotation:
+
   g_angleNow0 = g_angleNow0 + (g_angleRate0 * elapsedMS) / 1000.0;
   g_angleNow1 = g_angleNow1 + (g_angleRate1 * elapsedMS) / 1000.0;
   g_angleNow2 = g_angleNow2 + (g_angleRate2 * elapsedMS) / 1000.0;
@@ -417,6 +443,15 @@ function drawAll() {
 
 var b4Draw = Date.now();
 var b4Wait = b4Draw - g_lastMS;
+bpLt = document.getElementById('blinnphong').checked;
+worldX = document.getElementById('lightx').value;
+worldY = document.getElementById('lighty').value;
+worldZ = document.getElementById('lightz').value;
+
+aColor = hexToRgb(document.getElementById('ambient').value);
+dColor = hexToRgb(document.getElementById('diffuse').value);
+sColor = hexToRgb(document.getElementById('specular').value);
+
 
 	if(g_show0 == 1) {	// IF user didn't press HTML button to 'hide' VBO0:
 	  worldBox.switchToMe();  // Set WebGL to render from this VBObox.
@@ -448,20 +483,38 @@ function VBO0toggle() {
   console.log('g_show0: '+g_show0);
 }
 
-function VBO1toggle() {
+function VBO1toggle() { //change this toggle and vbo 2 so that if one is turned on the other is turned off etc
 //=============================================================================
 // Called when user presses HTML-5 button 'Show/Hide VBO1'.
-  if(g_show1 != 1) g_show1 = 1;			// show,
-  else g_show1 = 0;									// hide.
+  if(g_show1 != 1){
+    g_show1 = 1;			// show,
+    g_show2 = 0;
+  }
+  // else g_show1 = 0;									// hide.
   console.log('g_show1: '+g_show1);
+  console.log('g_show2:'+g_show2)
 }
 
 function VBO2toggle() {
 //=============================================================================
 // Called when user presses HTML-5 button 'Show/Hide VBO2'.
-  if(g_show2 != 1) g_show2 = 1;			// show,
-  else g_show2 = 0;									// hide.
+if(g_show2 != 1){
+  g_show2 = 1;			// show,
+  g_show1 = 0;
+}									// hide.
   console.log('g_show2: '+g_show2);
+  // console.log('g_show2')
+}
+
+function WorldLightToggle(){
+  if(lightOn) lightOn = false;
+  else lightOn = true;
+}
+
+function HeadlightToggle(){
+  if(hOn) hOn = false;
+  else hOn = true;
+  console.log(hOn);
 }
 
 function setCamera() {
